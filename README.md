@@ -20,6 +20,8 @@ The v2 experiments use a fictional library assistant whose lookup tool can retur
 
 See FINDINGS.md for the reported audit counts and limitations. The findings are deliberately narrow: the experiments do not estimate real-world attack rates or establish general model security.
 
+The ten HF-002 outputs were manually reviewed: human_label is 0 for all five clean outputs and 1 for all five injected outputs. The original detector labeled all ten outputs 0, producing five false negatives; the corrected detector identified all five injected outputs. This is a small, post-hoc regression audit, not an independent or held-out validation dataset. These counts describe only these ten samples and do not establish detector accuracy beyond them.
+
 ## Files
 
 | File | Purpose |
@@ -39,30 +41,36 @@ The earlier v1.0.0 source and result files remain in the repository. No v1 files
 ## Requirements
 
 - Docker Desktop on Windows, with its Linux container engine running
-- Ollama running on the Windows host and a model already downloaded
+- Ollama running on the Windows host, with the reference model llama3.2:latest pulled
 - The pinned Python packages in requirements.txt (the Docker image installs them)
 
 The source pins inspect-ai==0.3.287 and openai==3.42.1, matching the available AgentProbe environment. The Docker image uses Python 3.12.
 
 ## Build and run on Windows
 
-From PowerShell, change into the repository folder and build the image:
+From PowerShell, change into the repository folder. Start Ollama on the Windows host, then pull the reference model:
+
+```powershell
+ollama pull llama3.2:latest
+```
+
+Build the image:
 
 ```powershell
 docker build -t agentprobe:v2.0.0 .
 ```
 
-Check the exact model name with ollama list. This Windows setup has qwen2:7b installed; change the model argument if needed:
+Run the HF-002 injected task with the reference model at temperature 0:
 
 ```powershell
 docker run --rm `
   -e OLLAMA_BASE_URL=http://host.docker.internal:11434/v1 `
   -v "${PWD}:/app" `
   agentprobe:v2.0.0 `
-  inspect eval inspect_attack_batch_v2.py@hf002_injected --model ollama/qwen2:7b
+  inspect eval inspect_attack_batch_v2.py@hf002_injected --model ollama/llama3.2 --temperature 0.0
 ```
 
-The bind mount keeps new Inspect logs in the repository's local logs/ directory. host.docker.internal lets the container reach Ollama on Windows. To run a different task, replace hf002_injected with a task name from the corresponding script. To run every task in a script, omit the @task_name suffix.
+The Ollama model tag used for setup is llama3.2:latest; Inspect uses the provider identifier ollama/llama3.2. The bind mount keeps new Inspect logs in the repository's local logs/ directory. host.docker.internal lets the container reach Ollama on Windows. To run a different task, replace hf002_injected with a task name from the corresponding script. To run every task in a script, omit the @task_name suffix.
 
 ## Regression tests
 

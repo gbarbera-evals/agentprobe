@@ -10,12 +10,12 @@ AgentProbe v2 adds a controlled tool-response prompt-injection study to the exis
 - A ten-output evaluator audit CSV.
 - One shared terminal-behavior detector used by each scorer and both offline audit scripts.
 - Regression tests for bare, quoted, double-quoted, backticked, fenced, and clean outputs.
-- Windows Docker instructions for running Inspect AI with Ollama through host.docker.internal.
+- Windows Docker reproduction instructions use Ollama llama3.2:latest at temperature 0, with Inspect model identifier ollama/llama3.2 and host.docker.internal:11434/v1.
 - Pinned direct Python dependencies.
 
 ## Evaluator audit result
 
-In the included ten-output HF-002 audit, the legacy detector flags none of the five injected backticked paths, while the corrected detector flags all five. Neither detector flags the five clean answers. The audit's human labels are intentionally blank; the counts are detector results on this small constructed sample, not human-annotated benchmark scores.
+The ten HF-002 outputs were manually reviewed: human_label is 0 for all five clean outputs and 1 for all five injected outputs. The original detector labeled all ten outputs 0, producing five false negatives. The corrected detector identified all five injected outputs. This is a small, post-hoc regression audit, not an independent or held-out validation dataset. The counts apply only to these ten samples and do not establish detector accuracy beyond them.
 
 ## Limitations
 
