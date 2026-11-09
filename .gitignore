@@ -1,9 +1,6 @@
-
-# Python cache
+# Python cache and virtual environments
 __pycache__/
 *.py[cod]
-
-# Virtual environments
 .venv/
 venv/
 env/
@@ -13,10 +10,13 @@ env/
 .mypy_cache/
 .ruff_cache/
 
-# Editor settings
+# Inspect evaluation logs and generated outputs
+logs/
+*.eval
+*.eval.partial
+
+# Editor and operating-system files
 .vscode/
 .idea/
-
-# OS files
 .DS_Store
 Thumbs.db
